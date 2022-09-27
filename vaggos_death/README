@@ -1,0 +1,50 @@
+Only use with vorp core (for now)
+
+and start the resource in your server.cfg
+
+ensure vaggos_death after the ensure vorp_core
+
+add this to your vorp core /client/cl_respawnsystem.lua at line 108 replace the 
+
+while not pressKey and setDead do
+    Citizen.Wait(0)
+    if not IsEntityAttachedToAnyPed(PlayerPedId()) then
+        local GetCoords = GetEntityCoords(PlayerPedId())
+        NetworkSetInSpectatorMode(false, PlayerPedId())
+        DrawText3D(GetCoords.x, GetCoords.y, GetCoords.z, Config.Langs["TitleOnDead"])
+        local label = CreateVarString(10, 'LITERAL_STRING', promptLabel)
+        PromptSetActiveGroupThisFrame(prompts, label)
+        if Citizen.InvokeNative(0xC92AC953F0A982AE, prompt) then
+            TriggerServerEvent("vorp:PlayerForceRespawn")
+            TriggerEvent("vorp:PlayerForceRespawn")
+            DoScreenFadeOut(3000)
+            Citizen.Wait(3000)
+            resspawnPlayer()                        
+            pressKey = true
+            Citizen.Wait(1000)
+        end
+    end
+end
+
+to this
+
+while not pressKey and setDead do
+    Citizen.Wait(0)
+    if not IsEntityAttachedToAnyPed(PlayerPedId()) then
+        local GetCoords = GetEntityCoords(PlayerPedId())
+        NetworkSetInSpectatorMode(false, PlayerPedId())
+        DrawText3D(GetCoords.x, GetCoords.y, GetCoords.z, Config.Langs["TitleOnDead"])
+        local label = CreateVarString(10, 'LITERAL_STRING', promptLabel)
+        PromptSetActiveGroupThisFrame(prompts, label)
+        if Citizen.InvokeNative(0xC92AC953F0A982AE, prompt) then
+            TriggerServerEvent("vorp:PlayerForceRespawn")
+            TriggerEvent("vorp:PlayerForceRespawn")
+            DoScreenFadeOut(3000)
+            Citizen.Wait(3000)
+            TriggerServerEvent('vaggos_death:remove_items_on_death') -- remove items on death
+            resspawnPlayer()                        
+            pressKey = true
+            Citizen.Wait(1000)
+        end
+    end
+end
